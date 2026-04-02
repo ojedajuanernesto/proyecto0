@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // output: 'export', // Desactivado para permitir rutas de API (Chatbot) en Netlify
   images: {
     unoptimized: true,
   },

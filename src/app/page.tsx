@@ -5,7 +5,7 @@ import NoticiaCard from "@/components/ui/NoticiaCard";
 import EventoCard from "@/components/ui/EventoCard";
 import Card from "@/components/ui/Card";
 import { supabase } from "@/lib/supabase";
-import { Users, BookOpen, Calendar, Download, CheckCircle, ArrowRight, Award, Heart } from "lucide-react";
+import { Users, BookOpen, Calendar, Download, CheckCircle, ArrowRight, Award, Heart, MessageCircle } from "lucide-react";
 
 // export const revalidate = 0; // Desactivado para permitir exportación estática total
 

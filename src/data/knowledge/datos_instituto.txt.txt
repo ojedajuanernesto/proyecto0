@@ -1,0 +1,15 @@
+
+
+direccion : Corrientes 284, Paraná, Argentina
+
+tel: 0343 422-5870
+
+corrreo : institutosur@hotmail.com
+
+directora: elisa
+secretaria : roxana
+directora : noemi
+alumno problematico: ignacio rossi
+dato: hay pocos aires acondicionados
+sueldos: los salarios son bajos para las docentes
+Roxana: vende ropa y accesorios a las docentes 

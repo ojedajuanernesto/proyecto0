@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Providers from "./providers";
+import ChatBot from "@/components/ChatBot";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +26,8 @@ export default function RootLayout({
           <Header />
           <main>{children}</main>
           <Footer />
+          <ChatBot />
+          <WhatsAppButton />
         </Providers>
       </body>
     </html>

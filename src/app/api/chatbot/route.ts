@@ -56,7 +56,9 @@ export async function POST(request: Request) {
     const localKnowledge = getLocalKnowledge();
     const systemPrompt = `${BASE_SYSTEM_PROMPT}\n${localKnowledge}`;
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+    // Clave de respaldo si no está configurada en el entorno (Netlify)
+    const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDdGSAyuF8p5wLKg13u1JM9guBoh_FZXtA";
+    const genAI = new GoogleGenerativeAI(apiKey);
     
     // Usar systemInstruction es la forma más robusta de fijar el comportamiento
     const model = genAI.getGenerativeModel({ 

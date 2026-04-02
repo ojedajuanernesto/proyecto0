@@ -6,9 +6,7 @@
   package = "@netlify/plugin-nextjs"
 
 [functions]
-  node_version = "20"
   included_files = ["src/data/knowledge/**"]
 
-# Configuración para evitar errores con API routes en Next.js 14 en Netlify
 [build.environment]
-  NEXT_USE_NETLIFY_EDGE = "true"
+  NODE_VERSION = "20"

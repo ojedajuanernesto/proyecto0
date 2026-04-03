@@ -9,7 +9,17 @@ corrreo : institutosur@hotmail.com
 directora: elisa
 secretaria : roxana
 directora : noemi
-alumno problematico: ignacio rossi
+las aulas son grandes
 dato: hay pocos aires acondicionados
 sueldos: los salarios son bajos para las docentes
-Roxana: vende ropa y accesorios a las docentes 
+
+Puntualidad: Los alumnos deben estar dentro de su aula 5 minutos antes del toque de timbre.
+Uniforme Oficial: Uso obligatorio del uniforme completo, limpio y en buen estado de lunes a viernes.
+Respeto Mutuo: Mantener un lenguaje y trato cordial hacia docentes, personal y compañeros en todo momento.
+Dispositivos Electrónicos: El uso de teléfonos móviles queda restringido exclusivamente a fines pedagógicos autorizados.
+Cuidado del Entorno: Es deber de cada estudiante mantener la limpieza del aula y los espacios comunes.
+Asistencia Justificada: Toda ausencia deberá ser comunicada por el tutor legal antes de las 9:00 a. m.
+Honestidad Académica: Cualquier intento de plagio o copia en exámenes será sancionado según el reglamento.
+Artículos Prohibidos: No se permite el ingreso de objetos de valor o elementos distractores ajenos al estudio.
+Comportamiento en Recreos: Los descansos deben realizarse en las zonas asignadas bajo las normas de sana convivencia.
+Identificación: Portar la credencial del instituto en un lugar visible para el acceso y uso de servicios (biblioteca, comedor).

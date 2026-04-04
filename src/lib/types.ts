@@ -100,3 +100,15 @@ export interface DownloadItem {
   archivo: string;
   tipo: 'matricula' | 'reglamento' | 'calendario' | 'horario' | 'otro';
 }
+
+export interface Lead {
+  id: string;
+  nombre?: string;
+  telefono?: string;
+  email?: string;
+  mensaje?: string;
+  origen: 'chatbot';
+  estado: 'nuevo' | 'contactado' | 'atendido' | 'descartado';
+  created_at: string;
+  updated_at: string;
+}

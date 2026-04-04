@@ -53,7 +53,7 @@ export default function AdminDashboard() {
         supabase.from("noticias").select("id, titulo, fecha, publicada"),
         supabase.from("eventos").select("id, titulo, fecha, hora, lugar"),
         supabase.from("galeria").select("id"),
-        supabase.from("mensajes_contacto").select("id"),
+        supabase.from("leads").select("id"),
       ]);
 
       setStats({

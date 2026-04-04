@@ -340,6 +340,45 @@ CREATE POLICY "Authenticated users can update galeria"
 CREATE POLICY "Authenticated users can delete galeria"
   ON galeria FOR DELETE
   USING (auth.role() = 'authenticated');
+
+-- ============================================
+-- TABLA: leads (contactos del chatbot)
+-- ============================================
+CREATE TABLE leads (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  nombre TEXT,
+  telefono TEXT,
+  email TEXT,
+  motivo TEXT,
+  mensaje TEXT,
+  origen TEXT DEFAULT 'chatbot',
+  estado TEXT DEFAULT 'nuevo' CHECK (estado IN ('nuevo', 'contactado', 'atendido', 'descartado')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Habilitar Row Level Security
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+
+-- Política: Cualquiera puede leer leads (público para el chatbot)
+CREATE POLICY "Anyone can view leads"
+  ON leads FOR SELECT
+  USING (true);
+
+-- Política: Cualquiera puede insertar leads (público para el chatbot)
+CREATE POLICY "Anyone can insert leads"
+  ON leads FOR INSERT
+  WITH CHECK (true);
+
+-- Política: Solo usuarios autenticados pueden actualizar
+CREATE POLICY "Authenticated users can update leads"
+  ON leads FOR UPDATE
+  USING (auth.role() = 'authenticated');
+
+-- Política: Solo usuarios autenticados pueden eliminar
+CREATE POLICY "Authenticated users can delete leads"
+  ON leads FOR DELETE
+  USING (auth.role() = 'authenticated');
 ```
 
 ### 1.4 Configurar Autenticación

@@ -4,21 +4,23 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft, Mail, Trash2, Calendar, User, Phone, MessageSquare } from "lucide-react";
+import { ArrowLeft, Mail, Trash2, Calendar, User, Phone, MessageSquare, Check, X, Eye, Bot } from "lucide-react";
 
-interface Mensaje {
+interface Lead {
   id: string;
-  nombre: string;
-  email: string;
+  nombre: string | null;
+  email: string | null;
   telefono: string | null;
-  asunto: string | null;
-  mensaje: string;
+  mensaje: string | null;
+  motivo: string | null;
+  origen: string;
+  estado: 'nuevo' | 'contactado' | 'atendido' | 'descartado';
   created_at: string;
 }
 
 export default function AdminMensajes() {
   const { user, signOut, loading: authLoading } = useAuth();
-  const [mensajes, setMensajes] = useState<Mensaje[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,36 +31,64 @@ export default function AdminMensajes() {
 
   useEffect(() => {
     if (user) {
-      fetchMensajes();
+      fetchLeads();
     }
   }, [user]);
 
-  const fetchMensajes = async () => {
+  const fetchLeads = async () => {
     try {
       const { data, error } = await supabase
-        .from("mensajes_contacto")
+        .from("leads")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setMensajes(data || []);
+      setLeads(data || []);
     } catch (error) {
-      console.error("Error fetching mensajes:", error);
+      console.error("Error fetching leads:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Está seguro de eliminar este mensaje?")) return;
+    if (!confirm("¿Está seguro de eliminar este lead?")) return;
     
     try {
-      const { error } = await supabase.from("mensajes_contacto").delete().eq("id", id);
+      const { error } = await supabase.from("leads").delete().eq("id", id);
       if (error) throw error;
-      fetchMensajes();
+      fetchLeads();
     } catch (error) {
-      console.error("Error deleting mensaje:", error);
+      console.error("Error deleting lead:", error);
     }
+  };
+
+  const handleUpdateEstado = async (id: string, nuevoEstado: Lead['estado']) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ estado: nuevoEstado, updated_at: new Date().toISOString() })
+        .eq("id", id);
+      
+      if (error) throw error;
+      fetchLeads();
+    } catch (error) {
+      console.error("Error updating lead:", error);
+    }
+  };
+
+  const getEstadoColor = (estado: Lead['estado']) => {
+    switch (estado) {
+      case 'nuevo': return 'bg-yellow-100 text-yellow-800';
+      case 'contactado': return 'bg-blue-100 text-blue-800';
+      case 'atendido': return 'bg-green-100 text-green-800';
+      case 'descartado': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getOrigenIcon = (origen: string) => {
+    return origen === 'chatbot' ? <Bot className="w-4 h-4" /> : <Mail className="w-4 h-4" />;
   };
 
   if (authLoading || loading) {
@@ -81,7 +111,7 @@ export default function AdminMensajes() {
                 <ArrowLeft className="w-6 h-6" />
               </Link>
               <img src="/images/logo.jpg" alt="Instituto Sur" className="h-12 bg-white rounded-lg p-1" />
-              <h1 className="text-xl font-bold">Mensajes de Contacto</h1>
+              <h1 className="text-xl font-bold">Contactos / Leads</h1>
             </div>
             <button onClick={signOut} className="bg-secondary/20 px-4 py-2 rounded-lg hover:bg-secondary/30">
               Cerrar Sesión
@@ -91,10 +121,20 @@ export default function AdminMensajes() {
       </header>
 
       <div className="container mx-auto px-6 py-8">
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Bot className="w-6 h-6 text-primary" />
+            <h2 className="text-lg font-bold text-gray-800">Leads del Chatbot</h2>
+          </div>
+          <p className="text-gray-500 text-sm">
+            Contactos capturados automáticamente por el asistente virtual.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 gap-6">
-          {mensajes.length > 0 ? (
-            mensajes.map((mensaje) => (
-              <div key={mensaje.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          {leads.length > 0 ? (
+            leads.map((lead) => (
+              <div key={lead.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="p-6">
                   <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                     <div className="flex items-center gap-4">
@@ -102,42 +142,85 @@ export default function AdminMensajes() {
                         <User className="w-6 h-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg text-gray-800">{mensaje.nombre}</h3>
-                        <p className="text-sm text-gray-500">{mensaje.email}</p>
+                        <h3 className="font-bold text-lg text-gray-800">{lead.nombre || 'Sin nombre'}</h3>
+                        <p className="text-sm text-gray-500">{lead.email || 'Sin email'}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(mensaje.created_at).toLocaleString("es-ES")}
+                    <div className="flex items-center gap-3">
+                      <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${getEstadoColor(lead.estado)}`}>
+                        {getOrigenIcon(lead.origen)}
+                        {lead.estado.charAt(0).toUpperCase() + lead.estado.slice(1)}
+                      </span>
+                      <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                        <Calendar className="w-4 h-4" />
+                        {new Date(lead.created_at).toLocaleString("es-ES")}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {mensaje.telefono && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {lead.telefono && (
                       <div className="flex items-center gap-2 text-gray-600">
                         <Phone className="w-4 h-4 text-secondary" />
-                        <span>{mensaje.telefono}</span>
+                        <span>{lead.telefono}</span>
                       </div>
                     )}
-                    {mensaje.asunto && (
+                    {lead.motivo && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <MessageSquare className="w-4 h-4 text-primary" />
+                        <span className="font-medium">{lead.motivo}</span>
+                      </div>
+                    )}
+                    {lead.mensaje && (
                       <div className="flex items-center gap-2 text-gray-600">
                         <MessageSquare className="w-4 h-4 text-secondary" />
-                        <span className="capitalize">Asunto: {mensaje.asunto}</span>
+                        <span className="truncate">{lead.mensaje.substring(0, 50)}...</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-4">
-                    <p className="text-gray-700 whitespace-pre-wrap">{mensaje.mensaje}</p>
-                  </div>
+                  {lead.mensaje && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-4">
+                      <p className="text-gray-700 whitespace-pre-wrap">{lead.mensaje}</p>
+                    </div>
+                  )}
 
-                  <div className="flex justify-end">
+                  <div className="flex flex-wrap justify-between items-center gap-3">
+                    <div className="flex flex-wrap gap-2">
+                      {lead.estado === 'nuevo' && (
+                        <button
+                          onClick={() => handleUpdateEstado(lead.id, 'contactado')}
+                          className="flex items-center gap-1 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors"
+                        >
+                          <Check className="w-4 h-4" />
+                          Marcar Contactado
+                        </button>
+                      )}
+                      {lead.estado === 'contactado' && (
+                        <button
+                          onClick={() => handleUpdateEstado(lead.id, 'atendido')}
+                          className="flex items-center gap-1 text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg transition-colors"
+                        >
+                          <Check className="w-4 h-4" />
+                          Marcar Atendido
+                        </button>
+                      )}
+                      {(lead.estado === 'nuevo' || lead.estado === 'contactado') && (
+                        <button
+                          onClick={() => handleUpdateEstado(lead.id, 'descartado')}
+                          className="flex items-center gap-1 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                          Descartar
+                        </button>
+                      )}
+                    </div>
                     <button
-                      onClick={() => handleDelete(mensaje.id)}
+                      onClick={() => handleDelete(lead.id)}
                       className="flex items-center gap-2 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Eliminar Mensaje
+                      Eliminar
                     </button>
                   </div>
                 </div>
@@ -148,7 +231,8 @@ export default function AdminMensajes() {
               <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-8 h-8 text-gray-400" />
               </div>
-              <p className="text-gray-500 text-lg">No hay mensajes de contacto aún.</p>
+              <p className="text-gray-500 text-lg">No hay leads capturados aún.</p>
+              <p className="text-gray-400 text-sm mt-2">Los contactos del chatbot aparecerán aquí.</p>
             </div>
           )}
         </div>
